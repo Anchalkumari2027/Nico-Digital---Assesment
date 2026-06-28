@@ -1,0 +1,109 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "star_rating": {
+          "type": "star_rating",
+          "settings": {
+            "star_rating": 5,
+            "review_count": "7 reviews"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "premium_finishing_ChVimc": {
+          "type": "premium_finishing",
+          "settings": {
+            "title_1": "Spot UV",
+            "icon_1": "sparkle",
+            "upcharge_1": "",
+            "title_2": "Gold Foiling",
+            "icon_2": "crown",
+            "upcharge_2": ""
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "file_upload_Ud8Cir": {
+          "type": "file_upload",
+          "settings": {
+            "label": "Upload Your File"
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        }
+      },
+      "block_order": [
+        "star_rating",
+        "title",
+        "description",
+        "variant_picker",
+        "premium_finishing_ChVimc",
+        "quantity_selector",
+        "file_upload_Ud8Cir",
+        "price",
+        "buy_buttons"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "thumbnail_slider",
+        "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "none",
+        "hide_variants": true,
+        "enable_video_looping": true,
+        "padding_top": 36,
+        "padding_bottom": 12,
+        "breadcrumb_parent_text": "Print",
+        "breadcrumb_parent_url": "",
+        "tax_rate": 5,
+        "qty_discount_schedule": "100:0, 250:0, 500:0, 1000:0, 2500:0, 5000:0",
+        "quantity_list": "100, 250, 500, 1000, 2500, 5000",
+        "enable_custom_qty": true,
+        "min_qty": 100,
+        "contact_url": ""
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

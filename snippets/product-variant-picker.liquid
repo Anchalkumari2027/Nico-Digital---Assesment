@@ -1,0 +1,318 @@
+{% comment %}
+  Renders product variant-picker
+
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - product_form_id: {String} Id of the product form to which the variant picker is associated.
+  Usage:
+  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+{% endcomment %}
+{%- unless product.has_only_default_variant -%}
+  {%- liquid
+    assign has_custom_options = false
+    for option in product.options_with_values
+      assign downcase_name = option.name | downcase
+      if downcase_name contains 'shape' or downcase_name contains 'print' or downcase_name contains 'side' or downcase_name contains 'material'
+        assign has_custom_options = true
+        break
+      endif
+    endfor
+  -%}
+  {%- if template.suffix == 'card' or has_custom_options -%}
+    <variant-selects
+      id="variant-selects-{{ section.id }}"
+      data-section="{{ section.id }}"
+      data-product-handle="{{ product.handle }}"
+      data-product-title="{{ product.title | escape }}"
+      data-product-id="{{ product.id }}"
+      data-currency-code="{{ cart.currency.iso_code }}"
+      data-selected-price-amount="{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}"
+      {{ block.shopify_attributes }}
+    >
+      {%- for option in product.options_with_values -%}
+        {%- liquid
+          assign downcase_name = option.name | downcase
+          assign option_index = forloop.index
+          assign is_shape = false
+          if downcase_name contains 'shape' or option_index == 1
+            assign is_shape = true
+          endif
+          assign is_material = false
+          if downcase_name contains 'material'
+            assign is_material = true
+          endif
+          assign is_print = false
+          if downcase_name contains 'print' or downcase_name contains 'side' or option_index == 2
+            unless is_material
+              assign is_print = true
+            endunless
+          endif
+        -%}
+        
+        {%- if is_shape -%}
+          <!-- Shape Card Picker -->
+          <fieldset class="js product-form__input product-form__input--shape">
+            <legend class="form__label">Choose Shape</legend>
+            <div class="pdp-section-subtitle">Visual style: 3.5 x 2 inches / 89 x 51 mm / Aspect ratio ~ 1.75:1</div>
+            
+            <div class="pdp-shape-grid">
+              {%- for value in option.values -%}
+                {%- capture input_id -%}{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}{%- endcapture -%}
+                {%- capture input_name -%}{{ option.name }}-{{ option.position }}{%- endcapture -%}
+                {%- capture input_dataset -%}
+                  data-product-url="{{ value.product_url }}"
+                  data-option-value-id="{{ value.id }}"
+                  data-option-name="{{ option.name | escape }}"
+                {%- endcapture -%}
+                
+                <div class="pdp-shape-card{% if value.selected %} active{% endif %}" data-value="{{ value | escape }}">
+                  <div class="pdp-shape-badge">
+                    <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  
+                  <input
+                     type="radio"
+                     id="{{ input_id }}"
+                     name="{{ input_name | escape }}"
+                     value="{{ value | escape }}"
+                     form="{{ product_form_id }}"
+                     {% if value.selected %}checked{% endif %}
+                     {{ input_dataset }}
+                   >
+                  
+                  <label for="{{ input_id }}">
+                    <div class="pdp-shape-icon">
+                      {%- assign value_downcase = value | downcase -%}
+                      {%- if value_downcase contains 'rect' -%}
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="1"></rect></svg>
+                      {%- elsif value_downcase contains 'square' -%}
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg>
+                      {%- elsif value_downcase contains 'round' or value_downcase contains 'corner' -%}
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="3.5"></rect></svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="1"></rect></svg>
+                      {%- endif -%}
+                    </div>
+                    <div class="pdp-shape-name">{{ value }}</div>
+                    <div class="pdp-shape-desc">Visiting Card</div>
+                  </label>
+                </div>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+ 
+        {%- elsif is_print -%}
+          <!-- Print Type Pills -->
+          <fieldset class="js product-form__input product-form__input--print">
+            <legend class="form__label">Select Print Type</legend>
+            
+            <div class="pdp-print-grid">
+              {%- for value in option.values -%}
+                {%- capture input_id -%}{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}{%- endcapture -%}
+                {%- capture input_name -%}{{ option.name }}-{{ option.position }}{%- endcapture -%}
+                {%- capture input_dataset -%}
+                  data-product-url="{{ value.product_url }}"
+                  data-option-value-id="{{ value.id }}"
+                  data-option-name="{{ option.name | escape }}"
+                {%- endcapture -%}
+                
+                <div class="pdp-print-btn{% if value.selected %} active{% endif %}" data-value="{{ value | escape }}">
+                  <input
+                    type="radio"
+                    id="{{ input_id }}"
+                    name="{{ input_name | escape }}"
+                    value="{{ value | escape }}"
+                    form="{{ product_form_id }}"
+                    {% if value.selected %}checked{% endif %}
+                    {{ input_dataset }}
+                  >
+                  <label for="{{ input_id }}">
+                    <div class="pdp-print-icon">
+                      {%- assign value_downcase = value | downcase -%}
+                      {%- if value_downcase contains 'single' or value_downcase contains 'one' -%}
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="5" width="16" height="14" rx="1.5"></rect><line x1="7" y1="9" x2="17" y2="9"></line><line x1="7" y1="13" x2="13" y2="13"></line></svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><g opacity="0.5"><rect x="7" y="7" width="13" height="12" rx="1.5"></rect></g><rect x="3" y="4" width="13" height="12" rx="1.5"></rect><line x1="5" y1="8" x2="14" y2="8"></line></svg>
+                      {%- endif -%}
+                    </div>
+                    <span>{{ value }}</span>
+                  </label>
+                </div>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+
+        {%- else -%}
+          <!-- Material Dropdown Selector -->
+          {%- liquid
+            assign selected_desc = "Premium quality paper stock"
+            assign selected_downcase = option.selected_value | downcase
+            if selected_downcase contains '300'
+              assign selected_desc = "Standard quality paper board"
+            elsif selected_downcase contains '350'
+              assign selected_desc = "Premium thick paper board"
+            elsif selected_downcase contains 'matte'
+              assign selected_desc = "Smooth, non-reflective finish"
+            elsif selected_downcase contains 'gloss'
+              assign selected_desc = "Shiny, reflective finish"
+            endif
+          -%}
+          <div class="product-form__input product-form__input--dropdown pdp-material-dropdown-wrapper">
+            <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+              Select Material
+            </label>
+            
+            <div class="pdp-material-selector">
+              <div class="pdp-material-trigger">
+                <div class="pdp-material-info">
+                  <div class="pdp-material-swatch"></div>
+                  <div class="pdp-material-text">
+                    <span class="pdp-material-label">{{ option.selected_value }}</span>
+                    <span class="pdp-material-desc">{{ selected_desc }}</span>
+                  </div>
+                </div>
+                <div class="pdp-material-caret">
+                  <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              
+              <div class="pdp-material-dropdown">
+                {%- for value in option.values -%}
+                  {%- liquid
+                    assign value_downcase = value | downcase
+                    assign option_desc = "Premium quality paper stock"
+                    if value_downcase contains '300'
+                      assign option_desc = "Standard quality paper board"
+                    elsif value_downcase contains '350'
+                      assign option_desc = "Premium thick paper board"
+                    elsif value_downcase contains 'matte'
+                      assign option_desc = "Smooth, non-reflective finish"
+                    elsif value_downcase contains 'gloss'
+                      assign option_desc = "Shiny, reflective finish"
+                    endif
+                  -%}
+                  <div class="pdp-material-option{% if value.selected %} selected{% endif %}" data-option-value="{{ value | escape }}">
+                    <div class="pdp-material-swatch"></div>
+                    <div class="pdp-material-text">
+                      <span class="pdp-material-label">{{ value }}</span>
+                      <span class="pdp-material-desc">{{ option_desc }}</span>
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+              
+              <select
+                id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                class="select__select"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+              >
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if value.selected %}selected="selected"{% endif %}>
+                    {{ value }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      <script type="application/json" data-selected-variant>
+        {{ product.selected_or_first_available_variant | json }}
+      </script>
+    </variant-selects>
+
+  {%- else -%}
+    <variant-selects
+      id="variant-selects-{{ section.id }}"
+      data-section="{{ section.id }}"
+      data-product-handle="{{ product.handle }}"
+      data-product-title="{{ product.title | escape }}"
+      data-product-id="{{ product.id }}"
+      data-currency-code="{{ cart.currency.iso_code }}"
+      {% # theme-check-disable %}
+      data-selected-price-amount="{{ product.selected_or_first_available_variant.price | default: 0 | money_amount | escape }}"
+      {% # theme-check-enable %}
+      {{ block.shopify_attributes }}
+    >
+      {%- for option in product.options_with_values -%}
+        {%- liquid
+          assign swatch_count = option.values | map: 'swatch' | compact | size
+          assign picker_type = block.settings.picker_type
+
+          if swatch_count > 0 and block.settings.swatch_shape != 'none'
+            if block.settings.picker_type == 'dropdown'
+              assign picker_type = 'swatch_dropdown'
+            else
+              assign picker_type = 'swatch'
+            endif
+          endif
+        -%}
+        {%- if picker_type == 'swatch' -%}
+          <fieldset class="js product-form__input product-form__input--swatch">
+            <legend class="form__label">
+              {{ option.name }}:
+              <span data-selected-value>
+                {{- option.selected_value -}}
+              </span>
+            </legend>
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+        {%- elsif picker_type == 'button' -%}
+          <fieldset class="js product-form__input product-form__input--pill">
+            <legend class="form__label">{{ option.name }}</legend>
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+        {%- else -%}
+          <div class="product-form__input product-form__input--dropdown">
+            <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+              {{ option.name }}
+            </label>
+            <div class="select">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                class="select__select"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+              >
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
+              </select>
+              <span class="svg-wrapper">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      <script type="application/json" data-selected-variant>
+        {{ product.selected_or_first_available_variant | json }}
+      </script>
+    </variant-selects>
+  {%- endif -%}
+{%- endunless -%}
