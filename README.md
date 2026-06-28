@@ -1,6 +1,6 @@
 Theme Used
 Dawn (Shopify Online Store 2.0)
-Assumptions Made
+Assumptions Made <br>
 Premium Finishing has been implemented as a custom configurable section using Theme Editor blocks.
 Each Premium Finishing option (e.g., Spot UV, Gold Foiling) can have its own additional price, which updates the displayed product price when selected.
 This approach keeps the feature configurable while working within Shopify's variant limitations.
